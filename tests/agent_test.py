@@ -86,6 +86,19 @@ def test_agent_execution():
     output = agent.execute_task(task)
     assert output == "1 + 1 equals 2."
 
+@pytest.mark.vcr(filter_headers=["authorization"])
+def test_agent_ask():
+    agent = Agent(
+        role="test role",
+        goal="test goal",
+        backstory="test backstory",
+        allow_delegation=False,
+    )
+
+    task = Task(description="How much is 1 + 1?", agent=agent)
+    output = agent.ask(task)
+    assert output == "1 + 1 equals 2."
+
 
 @pytest.mark.vcr(filter_headers=["authorization"])
 def test_agent_execution_with_tools():

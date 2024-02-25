@@ -129,6 +129,12 @@ class Agent(BaseModel):
             self.set_cache_handler(self.cache_handler)
         return self
 
+
+    def ask(self,task):
+        result = self.execute_task(task,context="Converse e responda com os seus conhecimentos")
+        return result
+
+
     def execute_task(
         self,
         task: Any,
