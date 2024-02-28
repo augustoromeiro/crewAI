@@ -33,8 +33,11 @@ class CrewAgentParser(ReActSingleInputOutputParser):
     ```
     """
 
-    _i18n: I18N = I18N()
     agent: Any = None
+      
+    def __init__(self, i18n=None, **kwargs: Any):
+        super().__init__(**kwargs)
+        _i18n: I18N = i18n if i18n else I18N()
 
     def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
         includes_answer = FINAL_ANSWER_ACTION in text

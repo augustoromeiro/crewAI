@@ -249,7 +249,7 @@ class Agent(BaseModel):
         )
 
         bind = self.llm.bind(stop=[self.i18n.slice("observation")])
-        inner_agent = agent_args | execution_prompt | bind | CrewAgentParser(agent=self)
+        inner_agent = agent_args | execution_prompt | bind | CrewAgentParser(agent=self,i18n=self.i18n)
         self.agent_executor = CrewAgentExecutor(
             agent=RunnableAgent(runnable=inner_agent), **executor_args
         )
