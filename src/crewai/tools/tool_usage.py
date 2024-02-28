@@ -49,7 +49,7 @@ class ToolUsage:
         self._telemetry: Telemetry = Telemetry()
         self._run_attempts: int = 1
         self._max_parsing_attempts: int = 3
-        self._remeber_format_after_usages: int = 3
+        self._remember_format_after_usages: int = 3
         self.tools_description = tools_description
         self.tools_names = tools_names
         self.tools_handler = tools_handler
@@ -61,7 +61,7 @@ class ToolUsage:
         if (isinstance(self.llm, ChatOpenAI)) and (self.llm.openai_api_base == None):
             if self.llm.model_name in OPENAI_BIGGER_MODELS:
                 self._max_parsing_attempts = 2
-                self._remeber_format_after_usages = 4
+                self._remember_format_after_usages = 4
 
     def parse(self, tool_string: str):
         """Parse the tool string and return the tool calling."""
@@ -73,11 +73,13 @@ class ToolUsage:
         if isinstance(calling, ToolUsageErrorException):
             error = calling.message
             self._printer.print(content=f"\n\n{error}\n", color="red")
+            self.task.increment_tools_errors()
             return error
         try:
             tool = self._select_tool(calling.tool_name)
         except Exception as e:
             error = getattr(e, "message", str(e))
+            self.task.increment_tools_errors()
             self._printer.print(content=f"\n\n{error}\n", color="red")
             return error
         return f"{self._use(tool_string=tool_string, tool=tool, calling=calling)}\n\n{self._i18n.slice('final_answer_format')}"
@@ -103,7 +105,7 @@ class ToolUsage:
                 result = self._format_result(result=result)
                 return result
             except Exception:
-                pass
+                self.task.increment_tools_errors()
 
         result = self.tools_handler.cache.read(
             tool=calling.tool_name, input=calling.arguments
@@ -111,6 +113,12 @@ class ToolUsage:
 
         if not result:
             try:
+                if calling.tool_name in [
+                    "Delegate work to co-worker",
+                    "Ask question to co-worker",
+                ]:
+                    self.task.increment_delegations()
+
                 if calling.arguments:
                     result = tool._run(**calling.arguments)
                 else:
@@ -125,8 +133,10 @@ class ToolUsage:
                     error = ToolUsageErrorException(
                         f'\n{error_message}.\nMoving one then. {self._i18n.slice("format").format(tool_names=self.tools_names)}'
                     ).message
+                    self.task.increment_tools_errors()
                     self._printer.print(content=f"\n\n{error_message}\n", color="red")
                     return error
+                self.task.increment_tools_errors()
                 return self.use(calling=calling, tool_string=tool_string)
 
             self.tools_handler.on_tool_use(calling=calling, output=result)
@@ -145,7 +155,7 @@ class ToolUsage:
         return result
 
     def _should_remember_format(self) -> None:
-        return self.task.used_tools % self._remeber_format_after_usages == 0
+        return self.task.used_tools % self._remember_format_after_usages == 0
 
     def _remember_format(self, result: str) -> None:
         result = str(result)
@@ -166,6 +176,7 @@ class ToolUsage:
         for tool in self.tools:
             if tool.name.lower().strip() == tool_name.lower().strip():
                 return tool
+        self.task.increment_tools_errors()
         raise Exception(f"Tool '{tool_name}' not found.")
 
     def _render(self) -> str:
@@ -218,6 +229,7 @@ class ToolUsage:
             self._run_attempts += 1
             if self._run_attempts > self._max_parsing_attempts:
                 self._telemetry.tool_usage_error(llm=self.llm)
+                self.task.increment_tools_errors()
                 self._printer.print(content=f"\n\n{e}\n", color="red")
                 return ToolUsageErrorException(
                     f'{self._i18n.errors("tool_usage_error")}\n{self._i18n.slice("format").format(tool_names=self.tools_names)}'

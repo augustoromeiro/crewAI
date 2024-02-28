@@ -1,8 +1,7 @@
 import os
 import uuid
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from crewai_tools import BaseTool as CrewAITool
 from langchain.agents.agent import RunnableAgent
 from langchain.agents.tools import tool as LangChainTool
 from langchain.memory import ConversationSummaryMemory
@@ -23,6 +22,7 @@ from pydantic_core import PydanticCustomError
 
 from crewai.agents import CacheHandler, CrewAgentExecutor, CrewAgentParser, ToolsHandler
 from crewai.utilities import I18N, Logger, Prompts, RPMController
+from crewai.utilities.token_counter_callback import TokenCalcHandler, TokenProcess
 
 
 class Agent(BaseModel):
@@ -51,7 +51,9 @@ class Agent(BaseModel):
     _logger: Logger = PrivateAttr()
     _rpm_controller: RPMController = PrivateAttr(default=None)
     _request_within_rpm_limit: Any = PrivateAttr(default=None)
+    _token_process: TokenProcess = TokenProcess()
 
+    formatting_errors: int = 0
     model_config = ConfigDict(arbitrary_types_allowed=True)
     id: UUID4 = Field(
         default_factory=uuid.uuid4,
@@ -66,7 +68,7 @@ class Agent(BaseModel):
         description="Maximum number of requests per minute for the agent execution to be respected.",
     )
     memory: bool = Field(
-        default=True, description="Whether the agent should have memory or not"
+        default=False, description="Whether the agent should have memory or not"
     )
     verbose: bool = Field(
         default=False, description="Verbose mode for the Agent Execution"
@@ -123,8 +125,12 @@ class Agent(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def check_agent_executor(self) -> "Agent":
-        """Check if the agent executor is set."""
+    def set_agent_executor(self) -> "Agent":
+        """set agent executor is set."""
+        if hasattr(self.llm, "model_name"):
+            self.llm.callbacks = [
+                TokenCalcHandler(self.llm.model_name, self._token_process)
+            ]
         if not self.agent_executor:
             self.set_cache_handler(self.cache_handler)
         return self
@@ -243,20 +249,21 @@ class Agent(BaseModel):
         )
 
         bind = self.llm.bind(stop=[self.i18n.slice("observation")])
-        inner_agent = agent_args | execution_prompt | bind | CrewAgentParser(i18n=self.i18n)
+        inner_agent = agent_args | execution_prompt | bind | CrewAgentParser(agent=self,i18n=self.i18n)
         self.agent_executor = CrewAgentExecutor(
             agent=RunnableAgent(runnable=inner_agent), **executor_args
         )
 
-    def _parse_tools(self, tools: List[Any]) -> List[LangChainTool]:
-        """Parse tools to be used for the task."""
-        tools_list = []
-        for tool in tools:
-            if isinstance(tool, CrewAITool):
-                tools_list.append(tool.to_langchain())
-            else:
-                tools_list.append(tool)
-        return tools_list
+    def interpolate_inputs(self, inputs: Dict[str, Any]) -> None:
+        """Interpolate inputs into the agent description and backstory."""
+        if inputs:
+            self.role = self.role.format(**inputs)
+            self.goal = self.goal.format(**inputs)
+            self.backstory = self.backstory.format(**inputs)
+
+    def increment_formatting_errors(self) -> None:
+        """Count the formatting errors of the agent."""
+        self.formatting_errors += 1
 
     def format_log_to_str(
         self,
@@ -270,6 +277,23 @@ class Agent(BaseModel):
             thoughts += action.log
             thoughts += f"\n{observation_prefix}{observation}\n{llm_prefix}"
         return thoughts
+
+    def _parse_tools(self, tools: List[Any]) -> List[LangChainTool]:
+        """Parse tools to be used for the task."""
+        # tentatively try to import from crewai_tools import BaseTool as CrewAITool
+        tools_list = []
+        try:
+            from crewai_tools import BaseTool as CrewAITool
+
+            for tool in tools:
+                if isinstance(tool, CrewAITool):
+                    tools_list.append(tool.to_langchain())
+                else:
+                    tools_list.append(tool)
+        except ModuleNotFoundError:
+            for tool in tools:
+                tools_list.append(tool)
+        return tools_list
 
     @staticmethod
     def __tools_names(tools) -> str:

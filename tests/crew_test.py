@@ -131,7 +131,7 @@ def test_crew_creation():
 
     assert (
         crew.kickoff()
-        == '1. "The Role of AI in Predicting and Managing Pandemics"\nHighlight: \nIn an era where global health crises can emerge from any corner of the world, the role of AI in predicting and managing pandemics has never been more critical. Through intelligent data gathering and predictive analytics, AI can potentially identify the onset of pandemics before they reach critical mass, offering a proactive solution to a reactive problem. This article explores the intersection of AI and epidemiology, delving into how this cutting-edge technology is revolutionizing our approach to global health crises.\n\n2. "AI and the Future of Work: Will Robots Take Our Jobs?"\nHighlight: \nThe rise of AI has sparked both excitement and apprehension about the future of work. Will robots replace us, or will they augment our capabilities? This article delves into the heart of this controversial issue, examining the potential of AI to disrupt job markets, transform industries, and redefine the concept of work. It\'s not just a question of job security—it\'s a discussion about the kind of world we want to live in.\n\n3. "AI in Art and Creativity: A New Frontier in Innovation"\nHighlight: \nArt and creativity, once seen as the exclusive domain of human expression, are being redefined by the advent of AI. From algorithmic compositions to AI-assisted design, this article explores the burgeoning field of AI in art and creativity. It\'s a journey into a new frontier of innovation, one where the lines between human creativity and artificial intelligence blur into an exciting, uncharted territory.\n\n4. "Ethics in AI: Balancing Innovation with Responsibility"\nHighlight: \nAs AI continues to permeate every facet of our lives, questions about its ethical implications grow louder. This article invites readers into a thoughtful exploration of the moral landscape of AI. It challenges us to balance the relentless pursuit of innovation with the weighty responsibilities that come with it, asking: How can we harness the power of AI without losing sight of our human values?\n\n5. "AI in Education: Personalizing Learning for the Next Generation"\nHighlight: \nEducation is poised for a transformation as AI enters the classroom, promising a future where learning is personalized, not generalized. This article delves into how AI can tailor educational experiences to individual learning styles, making education more effective and accessible. It\'s a glimpse into a future where AI is not just a tool for learning, but an active participant in shaping the educational journey of the next generation.'
+        == '1. "The Role of AI in Predictive Analysis"\nHighlight: AI is revolutionizing the way we understand and utilize data through predictive analysis. Complex algorithms can sift through vast amounts of information, predict future trends and assist businesses in making informed decisions. The article will delve into the intricate workings of AI in predictive analysis and how it is shaping industries from healthcare to finance.\n\nNotes: This topic will focus on the business aspect of AI and its transformative role in data analysis. Case studies from different industries can be used to illustrate the impact of AI in predictive analysis.\n\n2. "The Intersection of AI and Quantum Computing"\nHighlight: As we stand at the crossroads of AI and quantum computing, there’s an unprecedented potential for breakthroughs in processing speed and problem-solving capabilities. This article will explore this exciting intersection, revealing how the fusion of these two technologies can push the boundaries of what\'s possible.\n\nNotes: The article will provide a detailed overview of quantum computing and how its integration with AI can revolutionize various sectors. Real-world applications and future predictions will be included.\n\n3. "AI for Sustainable Development"\nHighlight: In an era where sustainability is a global priority, AI is emerging as a powerful tool in progressing towards this goal. From optimizing resource use to monitoring environmental changes, AI\'s role in sustainable development is multifaceted and transformative. This article will shed light on how AI is being utilized to promote a more sustainable future.\n\nNotes: This topic will delve into the environmental aspect of AI and its potential in promoting sustainable development. Examples of AI applications in different environmental contexts will be provided.\n\n4. "Ethical Implications of AI"\nHighlight: As AI permeates our society, it brings along a host of ethical dilemmas. From privacy concerns to accountability, the ethical implications of AI are as complex as they are critical. This article will take a deep dive into the ethical landscape of AI, exploring the pressing issues and potential solutions.\n\nNotes: This topic will take a philosophical and ethical approach, discussing the moral implications of AI use and how they can be mitigated. It will include a wide range of perspectives from experts in the field.\n\n5. "AI in Art and Creativity"\nHighlight: The world of art is no stranger to the transformative power of AI. From creating original artworks to enhancing creative processes, AI is redefining the boundaries of art and creativity. This article will take you on a journey through the fascinating intersection of AI and creativity, showcasing the revolutionary impact of this technology in the art world.\n\nNotes: This article will explore the artistic side of AI, discussing how it\'s being used in various creative fields. It will feature interviews with artists and creators who are harnessing the power of AI in their work.'
     )
 
 
@@ -152,7 +152,7 @@ def test_hierarchical_process():
 
     assert (
         crew.kickoff()
-        == """Here are the 5 unique and interesting ideas for articles along with a highlight paragraph for each:\n\n1) The Future of AI and Machine Learning: A deeper look into the future of AI and machine learning, revealing the potential of both and their implications on society. The article will provide an informed vision of the future, addressing the possibilities that AI and machine learning could bring to our daily lives, from healthcare to education, and the challenges we might face.\n\n2) Startups Revolutionizing Traditional Industries with Tech: This article will narrate the journey of game-changing startups that are transforming traditional industries with innovative technology. It will delve into their stories, exploring how they leverage technology to disrupt the status quo, the hurdles they've overcome, and the impact they're making.\n\n3) Personal Development in the Age of Technology: In this article, we will explore how technology has changed the landscape of personal development. We will cover how digital tools and platforms are empowering individuals to learn, grow, and achieve their goals faster than ever before.\n\n4) Ethical Issues in Software Engineering: This article will investigate the ethical dilemmas that are arising in the realm of software engineering. It will discuss the moral implications of new technologies, the responsibilities of software engineers, and the need for a robust code of ethics in this rapidly evolving field.\n\n5) Entrepreneurship in the Digital Era: In this piece, we will delve into the role of digital technology in shaping the entrepreneurial landscape. We will discuss how the digital era has given rise to new entrepreneurial opportunities, the challenges that come with it, and the skills required to thrive in this new era."""
+        == "Here are the five interesting ideas for our next article along with a captivating paragraph for each:\n\n1. 'AI and Climate Change: A New Hope for Sustainability':\nIn a world where climate change is a pressing concern, Artificial Intelligence (AI) offers a glimmer of hope. This article will delve into how AI's predictive capabilities and data analysis can aid in sustainability efforts, from optimizing energy consumption to predicting extreme weather patterns. Through real-world examples and expert insights, we'll explore the innovative solutions AI is bringing to the fight against climate change.\n\n2. 'AI in Art: How Neural Networks are Revolutionizing the Artistic Landscape':\nArtificial Intelligence is not just for the tech-savvy; it's making waves in the art world too. This article will unveil how AI and Neural Networks are transforming the artistic landscape, creating a new genre of AI-art. From AI that can replicate the style of famous artists to AI that creates entirely original pieces, we will delve into this fascinating intersection of technology and creativity.\n\n3. 'The Role of AI in the Post-Covid World':\nThe global pandemic has drastically altered our world, and AI has played a pivotal role in this transformation. In this article, we'll explore how AI has been instrumental in everything from predicting the virus's spread to accelerating vaccine development. We'll also look ahead to the post-Covid world, investigating the lasting changes that AI will bring about in our societies.\n\n4. 'Demystifying AI: Breaking Down Complex AI Concepts for the Everyday Reader':\nArtificial Intelligence can seem like a complex and intimidating subject, but it doesn't have to be. This article aims to demystify AI, breaking down complex concepts into understandable nuggets of information. Whether you're an AI novice or a tech enthusiast, this article will enrich your understanding of AI and its impact on our lives.\n\n5. 'The Ethical Dilemmas of AI: Balancing Innovation and Humanity':\nAs AI continues to advance, it brings along a host of ethical dilemmas. This article will delve into the heart of these issues, discussing the balance between innovation and humanity. From the potential for bias in AI algorithms to the implications of autonomous machines, we'll explore the ethical implications of AI in our society."
     )
 
 
@@ -556,3 +556,141 @@ def test_task_with_no_arguments():
 
     result = crew.kickoff()
     assert result == "The total number of sales from January to May is 75."
+
+
+def test_delegation_is_not_enabled_if_there_are_only_one_agent():
+    from unittest.mock import patch
+
+    researcher = Agent(
+        role="Researcher",
+        goal="Make the best research and analysis on content about AI and AI agents",
+        backstory="You're an expert researcher, specialized in technology, software engineering, AI and startups. You work as a freelancer and is now working on doing research and analysis for a new customer.",
+        allow_delegation=True,
+    )
+
+    task = Task(
+        description="Look at the available data nd give me a sense on the total number of sales.",
+        agent=researcher,
+    )
+
+    crew = Crew(agents=[researcher], tasks=[task])
+
+    with patch.object(Task, "execute") as execute:
+        execute.return_value = "ok"
+        crew.kickoff()
+        assert task.tools == []
+
+
+@pytest.mark.vcr(filter_headers=["authorization"])
+def test_agents_do_not_get_delegation_tools_with_there_is_only_one_agent():
+    agent = Agent(
+        role="Researcher",
+        goal="Be super empathetic.",
+        backstory="You're love to sey howdy.",
+        allow_delegation=False,
+    )
+
+    task = Task(description="say howdy", expected_output="Howdy!", agent=agent)
+
+    crew = Crew(agents=[agent], tasks=[task])
+
+    result = crew.kickoff()
+    assert result == "Howdy!"
+    assert len(agent.tools) == 0
+
+
+@pytest.mark.vcr(filter_headers=["authorization"])
+def test_agent_usage_metrics_are_captured_for_sequential_process():
+    agent = Agent(
+        role="Researcher",
+        goal="Be super empathetic.",
+        backstory="You're love to sey howdy.",
+        allow_delegation=False,
+    )
+
+    task = Task(description="say howdy", expected_output="Howdy!", agent=agent)
+
+    crew = Crew(agents=[agent], tasks=[task])
+
+    result = crew.kickoff()
+    assert result == "Howdy!"
+    assert crew.usage_metrics == {
+        "completion_tokens": 8,
+        "prompt_tokens": 103,
+        "successful_requests": 1,
+        "total_tokens": 111,
+    }
+
+
+@pytest.mark.vcr(filter_headers=["authorization"])
+def test_agent_usage_metrics_are_captured_for_hierarchical_process():
+    from langchain_openai import ChatOpenAI
+
+    agent = Agent(
+        role="Researcher",
+        goal="Be super empathetic.",
+        backstory="You're love to sey howdy.",
+        allow_delegation=False,
+    )
+
+    task = Task(description="say howdy", expected_output="Howdy!")
+
+    crew = Crew(
+        agents=[agent],
+        tasks=[task],
+        process=Process.hierarchical,
+        manager_llm=ChatOpenAI(temperature=0, model="gpt-4"),
+    )
+
+    result = crew.kickoff()
+    assert result == "Howdy!"
+    assert crew.usage_metrics == {
+        "total_tokens": 1365,
+        "prompt_tokens": 1256,
+        "completion_tokens": 109,
+        "successful_requests": 3,
+    }
+
+
+def test_crew_inputs_interpolate_both_agents_and_tasks():
+    agent = Agent(
+        role="{topic} Researcher",
+        goal="Express hot takes on {topic}.",
+        backstory="You have a lot of experience with {topic}.",
+    )
+
+    task = Task(
+        description="Give me an analysis around {topic}.",
+        expected_output="{points} bullet points about {topic}.",
+    )
+
+    crew = Crew(agents=[agent], tasks=[task], inputs={"topic": "AI", "points": 5})
+
+    assert crew.tasks[0].description == "Give me an analysis around AI."
+    assert crew.tasks[0].expected_output == "5 bullet points about AI."
+    assert crew.agents[0].role == "AI Researcher"
+    assert crew.agents[0].goal == "Express hot takes on AI."
+    assert crew.agents[0].backstory == "You have a lot of experience with AI."
+
+
+def test_crew_inputs_interpolate_both_agents_and_tasks():
+    from unittest.mock import patch
+
+    agent = Agent(
+        role="{topic} Researcher",
+        goal="Express hot takes on {topic}.",
+        backstory="You have a lot of experience with {topic}.",
+    )
+
+    task = Task(
+        description="Give me an analysis around {topic}.",
+        expected_output="{points} bullet points about {topic}.",
+    )
+
+    with patch.object(Agent, "interpolate_inputs") as interpolate_agent_inputs:
+        with patch.object(Task, "interpolate_inputs") as interpolate_task_inputs:
+            interpolate_agent_inputs.return_value = None
+            interpolate_task_inputs.return_value = None
+            Crew(agents=[agent], tasks=[task], inputs={"topic": "AI", "points": 5})
+            interpolate_agent_inputs.assert_called()
+            interpolate_task_inputs.assert_called()
