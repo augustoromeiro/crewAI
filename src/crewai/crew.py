@@ -41,6 +41,7 @@ class Crew(BaseModel):
         full_output: Whether the crew should return the full output with all tasks outputs or just the final output.
         step_callback: Callback to be executed after each step for every agents execution.
         share_crew: Whether you want to share the complete crew infromation and execution with crewAI to make the library better, and allow us to train models.
+        inputs: Any inputs that the crew will use in tasks or agents, it will be interpolated in promtps.
     """
 
     __hash__ = object.__hash__  # type: ignore
@@ -53,6 +54,10 @@ class Crew(BaseModel):
     agents: List[Agent] = Field(default_factory=list)
     process: Process = Field(default=Process.sequential)
     verbose: Union[int, bool] = Field(default=0)
+    usage_metrics: Optional[dict] = Field(
+        default=None,
+        description="Metrics for the LLM usage during all tasks execution.",
+    )
     full_output: Optional[bool] = Field(
         default=False,
         description="Whether the crew should return the full output with all tasks outputs or just the final output.",
@@ -62,6 +67,10 @@ class Crew(BaseModel):
     )
     function_calling_llm: Optional[Any] = Field(
         description="Language model that will run the agent.", default=None
+    )
+    inputs: Optional[Dict[str, Any]] = Field(
+        description="Any inputs that the crew will use in tasks or agents, it will be interpolated in promtps.",
+        default=None,
     )
     config: Optional[Union[Json, Dict[str, Any]]] = Field(default=None)
     id: UUID4 = Field(default_factory=uuid.uuid4, frozen=True)
@@ -126,6 +135,15 @@ class Crew(BaseModel):
         return self
 
     @model_validator(mode="after")
+    def interpolate_inputs(self):
+        """Interpolates the inputs in the tasks and agents."""
+        for task in self.tasks:
+            task.interpolate_inputs(self.inputs)
+        for agent in self.agents:
+            agent.interpolate_inputs(self.inputs)
+        return self
+
+    @model_validator(mode="after")
     def check_config(self):
         """Validates that the crew is properly configured with agents and tasks."""
         if not self.config and not self.tasks and not self.agents:
@@ -187,14 +205,27 @@ class Crew(BaseModel):
                 agent.step_callback = self.step_callback
                 agent.create_agent_executor()
 
-        if self.process == Process.sequential:
-            return self._run_sequential_process()
-        if self.process == Process.hierarchical:
-            return self._run_hierarchical_process()
+        metrics = []
 
-        raise NotImplementedError(
-            f"The process '{self.process}' is not implemented yet."
-        )
+        if self.process == Process.sequential:
+            result = self._run_sequential_process()
+        elif self.process == Process.hierarchical:
+            result, manager_metrics = self._run_hierarchical_process()
+            metrics.append(manager_metrics)
+
+        else:
+            raise NotImplementedError(
+                f"The process '{self.process}' is not implemented yet."
+            )
+
+        metrics = metrics + [
+            agent._token_process.get_summary() for agent in self.agents
+        ]
+        self.usage_metrics = {
+            key: sum([m[key] for m in metrics if m is not None]) for key in metrics[0]
+        }
+
+        return result
 
     def _run_sequential_process(self) -> str:
         """Executes tasks sequentially and returns the final output."""
@@ -204,7 +235,8 @@ class Crew(BaseModel):
                 agents_for_delegation = [
                     agent for agent in self.agents if agent != task.agent
                 ]
-                task.tools += AgentTools(agents=agents_for_delegation).tools()
+                if len(self.agents) > 1 and len(agents_for_delegation) > 0:
+                    task.tools += AgentTools(agents=agents_for_delegation).tools()
 
             role = task.agent.role if task.agent is not None else "None"
             self._logger.log("debug", f"Working Agent: {role}")
@@ -247,7 +279,7 @@ class Crew(BaseModel):
             )
 
         self._finish_execution(task_output)
-        return self._format_output(task_output)
+        return self._format_output(task_output), manager._token_process.get_summary()
 
     def _format_output(self, output: str) -> str:
         """Formats the output of the crew execution."""
