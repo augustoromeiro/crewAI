@@ -136,8 +136,16 @@ class Agent(BaseModel):
         return self
 
 
-    def ask(self,task):
-        result = self.execute_task(task,context="Converse e responda com os seus conhecimentos")
+    def ask(self,question,context=None):
+        if not self.agent_executor:
+            self.create_agent_executor()
+        result = self.agent_executor.invoke(
+            {
+                "input": question,
+                "tool_names": self.agent_executor.tools_names,
+                "tools": self.agent_executor.tools_description,
+            }
+        )["output"]
         return result
 
 

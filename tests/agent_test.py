@@ -97,8 +97,7 @@ def test_agent_ask():
         allow_delegation=False,
     )
 
-    task = Task(description="How much is 1 + 1?", agent=agent)
-    output = agent.ask(task)
+    output = agent.ask("How much is 1 + 1?")
     assert output == "1 + 1 equals 2."
 
 
