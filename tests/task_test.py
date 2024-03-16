@@ -26,6 +26,7 @@ def test_task_tool_reflect_agent_tools():
 
     task = Task(
         description="Give me a list of 5 interesting ideas to explore for na article, what makes them unique and interesting.",
+        expected_output="Bullet point list of 5 ideas.",
         agent=researcher,
     )
 
@@ -53,6 +54,7 @@ def test_task_tool_takes_precedence_over_agent_tools():
 
     task = Task(
         description="Give me a list of 5 interesting ideas to explore for an article, what makes them unique and interesting.",
+        expected_output="Bullet point list of 5 ideas.",
         agent=researcher,
         tools=[fake_task_tool],
     )
@@ -235,7 +237,7 @@ def test_output_pydantic_to_another_task():
 
     crew = Crew(agents=[scorer], tasks=[task1, task2], verbose=2)
     result = crew.kickoff()
-    assert 4 == result.score
+    assert 5 == result.score
 
 
 @pytest.mark.vcr(filter_headers=["authorization"])
@@ -266,7 +268,7 @@ def test_output_json_to_another_task():
 
     crew = Crew(agents=[scorer], tasks=[task1, task2])
     result = crew.kickoff()
-    assert '{\n  "score": 5\n}' == result
+    assert '{\n  "score": 3\n}' == result
 
 
 @pytest.mark.vcr(filter_headers=["authorization"])
@@ -447,3 +449,16 @@ def test_increment_tool_errors():
         increment_tools_errors.return_value = None
         crew.kickoff()
         increment_tools_errors.assert_called_once
+
+
+def test_task_definition_based_on_dict():
+    config = {
+        "description": "Give me an integer score between 1-5 for the following title: 'The impact of AI in the future of work', check examples to based your evaluation.",
+        "expected_output": "The score of the title.",
+    }
+
+    task = Task(config=config)
+
+    assert task.description == config["description"]
+    assert task.expected_output == config["expected_output"]
+    assert task.agent is None

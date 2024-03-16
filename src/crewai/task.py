@@ -25,15 +25,18 @@ class Task(BaseModel):
     i18n: I18N = I18N()
     thread: threading.Thread = None
     description: str = Field(description="Description of the actual task.")
+    expected_output: str = Field(
+        description="Clear definition of expected output for the task."
+    )
+    config: Optional[Dict[str, Any]] = Field(
+        description="Configuration for the agent",
+        default=None,
+    )
     callback: Optional[Any] = Field(
         description="Callback to be executed after the task is completed.", default=None
     )
     agent: Optional[Agent] = Field(
         description="Agent responsible for execution the task.", default=None
-    )
-    expected_output: Optional[str] = Field(
-        description="Clear definition of expected output for the task.",
-        default=None,
     )
     context: Optional[List["Task"]] = Field(
         description="Other tasks that will have their output used as context for this task.",
@@ -68,6 +71,10 @@ class Task(BaseModel):
         description="Unique identifier for the object, not set by user.",
     )
 
+    def __init__(__pydantic_self__, **data):
+        config = data.pop("config", {})
+        super().__init__(**config, **data)
+
     @field_validator("id", mode="before")
     @classmethod
     def _deny_user_set_id(cls, v: Optional[UUID4]) -> None:
@@ -75,6 +82,14 @@ class Task(BaseModel):
             raise PydanticCustomError(
                 "may_not_set_field", "This field is not to be set by the user.", {}
             )
+
+    @model_validator(mode="after")
+    def set_attributes_based_on_config(self) -> "Task":
+        """Set attributes based on the agent configuration."""
+        if self.config:
+            for key, value in self.config.items():
+                setattr(self, key, value)
+        return self
 
     @model_validator(mode="after")
     def check_tools(self):
@@ -166,19 +181,17 @@ class Task(BaseModel):
         """
         tasks_slices = [self.description]
 
-        if self.expected_output:
-            output = self.i18n.slice("expected_output").format(
-                expected_output=self.expected_output
-            )
-            tasks_slices = [self.description, output]
+        output = self.i18n.slice("expected_output").format(
+            expected_output=self.expected_output
+        )
+        tasks_slices = [self.description, output]
         return "\n".join(tasks_slices)
 
     def interpolate_inputs(self, inputs: Dict[str, Any]) -> None:
         """Interpolate inputs into the task description and expected output."""
         if inputs:
             self.description = self.description.format(**inputs)
-            if self.expected_output:
-                self.expected_output = self.expected_output.format(**inputs)
+            self.expected_output = self.expected_output.format(**inputs)
 
     def increment_tools_errors(self) -> None:
         """Increment the tools errors counter."""
@@ -231,3 +244,6 @@ class Task(BaseModel):
         with open(self.output_file, "w") as file:
             file.write(result)
         return None
+
+    def __repr__(self):
+        return f"Task(description={self.description}, expected_output={self.expected_output})"
