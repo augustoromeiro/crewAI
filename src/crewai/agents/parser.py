@@ -37,8 +37,8 @@ class CrewAgentParser(ReActSingleInputOutputParser):
     agent: Any = None
       
     def __init__(self, i18n=None, **kwargs: Any):
-        super().__init__(**kwargs)
         _i18n: I18N = i18n if i18n else I18N()
+        super().__init__(**kwargs)
 
     def parse(self, text: str) -> Union[AgentAction, AgentFinish]:
         includes_answer = FINAL_ANSWER_ACTION in text
@@ -67,7 +67,7 @@ class CrewAgentParser(ReActSingleInputOutputParser):
             self.agent.increment_formatting_errors()
             raise OutputParserException(
                 f"Could not parse LLM output: `{text}`",
-                observation=f"{MISSING_ACTION_AFTER_THOUGHT_ERROR_MESSAGE}\n{self._i18n.slice('final_answer_format')}",
+                observation=f"{MISSING_ACTION_AFTER_THOUGHT_ERROR_MESSAGE}\n{self._i18n.slice('final_answer_format') if self._i18n else ''}",
                 llm_output=text,
                 send_to_llm=True,
             )
