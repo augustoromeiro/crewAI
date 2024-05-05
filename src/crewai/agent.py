@@ -364,6 +364,7 @@ class Agent(BaseModel):
             thoughts += f"\n{observation_prefix}{observation}\n{llm_prefix}"
         return thoughts
 
+
     def _parse_tools(self, tools: List[Any]) -> List[LangChainTool]:
         """Parse tools to be used for the task."""
         # tentatively try to import from crewai_tools import BaseTool as CrewAITool
